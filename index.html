@@ -352,7 +352,6 @@ html,body{
   cursor:pointer;
   font-size:12.5px;
   font-weight:bold;
-  font-family: 'Times New Roman', Times, serif;
   transition:.2s;
   position:relative;
 }
@@ -368,7 +367,7 @@ html,body{
   opacity:.35;
   pointer-events:none;
 }
-.ticket .ticket-label{ display:block; margin-bottom:4px; font-size:10px; opacity:.7; font-weight:normal; font-family: 'Times New Roman', Times, serif;}
+.ticket .ticket-label{ display:block; margin-bottom:4px; font-size:10px; opacity:.7; font-weight:normal;}
 
 @media (max-width:380px){
   .scene h1{ font-size:22px; }
@@ -740,7 +739,7 @@ html,body{
       <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Un día de sí a todo</div>
       <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Terminar una discusión</div>
       <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Tener una piyamada</div>
-      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Un favor que no pueda negarte</div>
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Darte muchos besitos</div>
       <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Ir a jugar basket</div>
     </div>
   </section>
@@ -753,6 +752,56 @@ html,body{
 </div>
 
 <script>
+
+/* ============================================================
+   MÚSICA DE FONDO
+   ============================================================ */
+const bgMusic = document.getElementById('bg-music');
+const muteBtn = document.getElementById('mute-btn');
+let musicStarted = false;
+
+function startMusicOnce(){
+  if(musicStarted) return;
+  musicStarted = true;
+  bgMusic.volume = 0.5; // 👉 sube o baja este valor (0 a 1) para el volumen inicial
+  bgMusic.play().catch(() => {
+    // si el navegador bloquea el autoplay, no pasa nada, el botón sigue disponible
+  });
+}
+
+function toggleMusic(){
+  if(bgMusic.paused){
+    bgMusic.play();
+    muteBtn.textContent = '🔊';
+  } else {
+    bgMusic.pause();
+    muteBtn.textContent = '🔇';
+  }
+}
+
+// Los navegadores exigen que el audio empiece tras una acción del usuario (un clic).
+// Como "Empezar"/"Denegar" ya son clics reales, aprovechamos ese primer clic para arrancar la música.
+document.addEventListener('click', startMusicOnce, { once: true });
+
+let history_ = ['scene-intro'];
+let giftsOpened = { letter:false, songs:false, pokeball:false, tickets:false };
+
+function go(id){
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  history_.push(id);
+  refreshHubUI();
+}
+
+function goBack(){
+  if(history_.length > 1){
+    history_.pop();
+    const prev = history_[history_.length - 1];
+    document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+    document.getElementById(prev).classList.add('active');
+  }
+  refreshHubUI();
+}
 
 function restart(){
   if(confettiInterval) clearInterval(confettiInterval);
